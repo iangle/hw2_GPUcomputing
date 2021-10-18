@@ -86,11 +86,6 @@ int pgmWrite( const char **header, const int *pixels, int numRows, int numCols, 
         return 0;
 }
 
-//check if we need to implament
-/*double distance(int p1[], int p2[]){
-        return sqrt( pow( p1[0] - p2[0], 2 ) + pow( p1[1] - p2[1], 2 ) );
-}//end distance
-*/
 
 
                 
