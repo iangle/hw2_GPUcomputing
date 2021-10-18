@@ -12,12 +12,13 @@
 #include "pgmUtility.h"
 
 //---------------------------------------------------------------------------
-int ** pgmRead( char **header, int *numRows, int *numCols, FILE *in )
+int ** pgmRead1( char **header, int *numRows, int *numCols, FILE *in )
 {
     int i, j;
     
+
     // read in header of the image first
-    for( i = 0; i < rowsInHeader; i ++)
+    /*for( i = 0; i < rowsInHeader; i ++)
     {
         if ( header[i] == NULL )
         {
@@ -27,9 +28,14 @@ int ** pgmRead( char **header, int *numRows, int *numCols, FILE *in )
         {
             return NULL;
         }
-    }
+    }*/
+
+
+
     // extract rows of pixels and columns of pixels
-    sscanf( header[rowsInHeader - 2], "%d %d", numCols, numRows );  // in pgm the first number is # of cols
+    //this is the original!!!!
+    //sscanf( header[rowsInHeader - 2], "%d %d", numCols, numRows );  // in pgm the first number is # of cols
+    sscanf( "640 480", "%d %d", numCols, numRows );
     
     // Now we can intialize the pixel of 2D array, allocating memory
     int **pixels = ( int ** ) malloc( ( *numRows ) * sizeof( int * ) );
@@ -47,13 +53,15 @@ int ** pgmRead( char **header, int *numRows, int *numCols, FILE *in )
         for( j = 0; j < *numCols; j ++ )
             if ( fscanf(in, "%d ", *( pixels + i ) + j) < 0 )
                 return NULL;
-    
+
+    printf("made 4\n");
+
     return pixels;
 }
 
 //---------------------------------------------------------------------------
 //
-int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
+/*int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
                   int centerCol, int radius, char **header )
 {
 
@@ -96,7 +104,7 @@ int pgmWrite( const char **header, const int **pixels, int numRows, int numCols,
         }
     }
     return 0;
-}
+} */
 
 //-------------------------------------------------------------------------------
 double distance( int p1[], int p2[] )
