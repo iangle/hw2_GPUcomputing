@@ -9,3 +9,6 @@
  *  @return         return distance between p1 and p2
  */
 __device__ float distance( int p1[], int p2[] );
+
+//Draws an edge around the provided PGM.
+__global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth);
