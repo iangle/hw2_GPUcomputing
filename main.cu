@@ -145,35 +145,4 @@ void usage()
         printf("Usage:\n    -e edgeWidth  oldImageFile  newImageFile\n    -c circleCenterRow circleCenterCol radius  oldImageFile  newImageFile\n    -l  p1row  p1col  p2row  p2col  oldImageFile  newImageFile\n");
 
 }
-                    usage();
-                    fclose(fp);
-                    return 1;
-                }
-
-                pixels = pgmRead(header, &numRows, &numCols, fp);
-                pgmDrawLine(pixels, numRows, numCols, header, p1y, p1x, p2y, p2x);
-                pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );
-                break;
-        }
-    }
-
-    i = 0;
-    for(;i < numRows; i++)
-        free(pixels[i]);
-    free(pixels);
-    i = 0;
-    for(;i < rowsInHeader; i++)
-        free(header[i]);
-    free(header);
-    if(out != NULL)
-        fclose(out);
-    if(fp != NULL)
-        fclose(fp);
-    return 0;
-}//end main
-
-void usage()
-{
-        printf("Usage:\n    -e edgeWidth  oldImageFile  newImageFile\n    -c circleCenterRow circleCenterCol radius  oldImageFile  newImageFile\n    -l  p1row  p1col  p2row  p2col  oldImageFile  newImageFile\n");
-
-}
+                    
