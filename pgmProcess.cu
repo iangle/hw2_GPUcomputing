@@ -13,3 +13,15 @@ __device__ float distance( int p1[], int p2[] )
 {
 
 }
+
+//Draws an edge around the provided PGM.
+__global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth)
+{
+  //Standard CUDA Variables
+  int ix = blockIdx.x + blockDim.x + threadIdx.x;
+  int iy = blockIdx.y + blockDim.y + threadIdx.y;
+  int idx = iy*numCols + ix;
+  
+  if(ix < numCols && iy < numRows && (ix > numCols - edgeWidth || ix < edgewidth) && (iy > numRows - edgeWitdh || iy < edgeWidth))
+    pixels[idx] = 0;
+}
