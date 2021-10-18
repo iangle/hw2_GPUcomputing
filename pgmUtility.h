@@ -31,9 +31,7 @@
  *                  a 1D array that stores a 2D image in a linearized fashion. Otherwise null.
  *
  */
-int * pgmRead( char **header, int *numRows, int *numCols, FILE *in  );
-
-int ** pgmRead1( char **header, int *numRows, int *numCols, FILE *in );
+int ** pgmRead( char **header, int *numRows, int *numCols, FILE *in  );
 
 
 /**
@@ -55,7 +53,7 @@ int ** pgmRead1( char **header, int *numRows, int *numCols, FILE *in );
  *                  have to change maximum intensity value in the header accordingly.
  *  @return         return 1 if max intensity is changed, otherwise return 0;
  */
-int pgmDrawCircle( int *pixels, int numRows, int numCols, int centerRow,
+int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
                   int centerCol, int radius, char **header );
 
 
@@ -76,7 +74,7 @@ int pgmDrawCircle( int *pixels, int numRows, int numCols, int centerRow,
  *
  *  @return         return 1 if max intensity is changed by the drawing, otherwise return 0;
  */
-int pgmDrawEdge( int *pixels, int numRows, int numCols, int edgeWidth, char **header );
+int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header );
 
 
 /**
@@ -99,7 +97,7 @@ int pgmDrawEdge( int *pixels, int numRows, int numCols, int edgeWidth, char **he
  *
  *  @return         return 1 if max intensity is changed by the drawing, otherwise return 0;
  */
-int pgmDrawLine( int *pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col );
+int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col );
 
 
 
@@ -118,7 +116,7 @@ int pgmDrawLine( int *pixels, int numRows, int numCols, char **header, int p1row
  *  @return     return 0 if the function successfully writes the header and pixels into file.
  *                          else return -1;
  */
-int pgmWrite( const char **header, const int *pixels, int numRows, int numCols, FILE *out );
+int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out );
 
 
 #endif

@@ -11,7 +11,8 @@
 // NOTE: You might have to change the name of this file into pgmUtility.cu if needed.
 
 
-int * pgmRead( char **header, int *numRows, int *numCols, FILE *in  ){
+int ** pgmRead( char **header, int *numRows, int *numCols, FILE *in){
+
         int i, j;
 
         // read in header of the image first
@@ -50,7 +51,7 @@ int * pgmRead( char **header, int *numRows, int *numCols, FILE *in  ){
         return pixels;
 }//end pgmRead
 
-int pgmDrawCircle( int *pixels, int numRows, int numCols, int centerRow,
+int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
                   int centerCol, int radius, char **header ){
 
     int *d_a;
@@ -88,15 +89,17 @@ int pgmDrawCircle( int *pixels, int numRows, int numCols, int centerRow,
     return 0;
 }
 
-int pgmDrawEdge( int *pixels, int numRows, int numCols, int edgeWidth, char **header ){
-
+int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
+{
+    return 0;
 }
 
-int pgmDrawLine( int *pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p$
-
+int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col)
+{
+    return 0;
 }
 
-int pgmWrite( const char **header, const int *pixels, int numRows, int numCols, FILE *out ){
+int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out ){
     int i, j;
 
     // write the header

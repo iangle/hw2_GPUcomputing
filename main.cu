@@ -4,6 +4,9 @@
 #include "pgmProcess.h"
 #include "pgmUtility.h"
 #include "timing.h"
+//comment here
+
+void usage();
 
 int main(int argc, char *argv[]){
 
@@ -28,14 +31,14 @@ int main(int argc, char *argv[]){
     char originalImageName[100], newImageFileName[100];
     if(argc != 5 && argc != 7 && argc != 8)
     {
-                usage();//error message
+                usage(); //error message
         return 1;
         }
     else
     {
         l = strlen( argv[1] );//type of modification (-c: circle, -e: edge, -l: line)
         if(l != 2){
-            usage();/error message
+            usage(); //error message
             return 1;
         }
         ch = (int)argv[1][1];
@@ -118,7 +121,7 @@ int main(int argc, char *argv[]){
                     return 1;
                 }
                 out = fopen(newImageFileName, "w");
-                if(out == NULL){els = pgmRead(header, &numRows, &numCols, fp);
+                if(out == NULL){pixels = pgmRead(header, &numRows, &numCols, fp);
                 pgmDrawLine(pixels, numRows, numCols, header, p1y, p1x, p2y, p2x);
                 pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );
                 break;
@@ -138,6 +141,7 @@ int main(int argc, char *argv[]){
     if(fp != NULL)
         fclose(fp);
     return 0;
+    }
 }//end main
 
 void usage()
