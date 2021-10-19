@@ -120,4 +120,6 @@ int pgmWrite( const char **header, const int **pixels, int numRows, int numCols,
 
 void flattenArray(int **pixels, int *storageArray, int rowSize, int colSize);
 
+void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize);
+
 #endif
