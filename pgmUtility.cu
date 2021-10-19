@@ -57,13 +57,17 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
 
     int *p2;
 
+    int *flatArray = malloc(sizeof(int)*numCols*numRows);
+
+    flattenArray(pixels, flatArray, numRows, numCols);
+
     size_t bytes = numCols*numRows*sizeof(int);
 
     cudaMalloc(&d_a, bytes);
     cudaMalloc(&p1, 2*sizeof(int));
     cudaMalloc(&p2, 2*sizeof(int));
 
-    cudaMemcpy(d_a, pixels, bytes, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
 
     int blockSize, gridSize;
 
@@ -76,7 +80,7 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     // Execute the kernel
     addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius, p1, p2);
 
-    cudaMemcpy(pixels, d_a, bytes, cudaMemcpyDeviceToHost);
+    cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
 
     cudaFree(d_a);
 
