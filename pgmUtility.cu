@@ -57,7 +57,7 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
 
     int *p2;
 
-    int *flatArray = malloc(sizeof(int)*numCols*numRows);
+    int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
 
     flattenArray(pixels, flatArray, numRows, numCols);
 
