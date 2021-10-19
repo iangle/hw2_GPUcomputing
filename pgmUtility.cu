@@ -1,15 +1,12 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-
 #include "pgmUtility.h"
 #include "pgmProcess.h"
 // Implement or define each function prototypes listed in pgmUtility.h file.
 // NOTE: Please follow the instructions stated in the write-up regarding the interface of the func$
 // NOTE: You might have to change the name of this file into pgmUtility.cu if needed.
-
 
 int ** pgmRead( char **header, int *numRows, int *numCols, FILE *in){
 
@@ -100,6 +97,7 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
 }
 
 int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out ){
+
     int i, j;
 
     // write the header
@@ -121,7 +119,3 @@ int pgmWrite( const char **header, const int **pixels, int numRows, int numCols,
         }
         return 0;
 }
-
-
-
-                
