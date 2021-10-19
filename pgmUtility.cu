@@ -89,6 +89,29 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     return 0;
 }
 
+int pgmDrawCircleSeq(int *pixels, int numRows, int numCols, int centerRow,
+                  int centerCol, int radius, char **header )
+{
+        int *p1 = malloc(2*sizeof(int));
+        int *p2 = malloc(2*sizeof(int));
+
+        for (int x=0; i < numRows; x++) {
+                for (int y=0; i < numCols; y++) {
+                        p1[0] = x;
+                        p1[1] = y;
+
+                        p2[0] = centerRow;
+                        p2[1] = centerCol;    
+
+                        float totalDistance = distance(p1,p2);
+
+                        if(totalDistance <= radius && x < numRows && y < numCols) {
+                            pixels[idx] = 0;
+                        }
+                }
+        }
+}
+
 int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
 {
     return 0;
