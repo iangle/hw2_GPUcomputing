@@ -12,14 +12,13 @@
  */
 __device__ float distance( int p1[], int p2[] )
 {
-
     float xDistance = p1[0] - p2[0];
 
-    xDistance = xDistance*xDistance;
+    xDistance = pow(xDistance, 2);
 
     float yDistance = p1[1] - p2[1];
 
-    yDistance = yDistance*yDistance;
+    yDistance = pow(yDistance, 2);
 
     return sqrt(xDistance + yDistance);
 
@@ -31,17 +30,23 @@ __global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, 
     int iy   = blockIdx.y*blockDim.y + threadIdx.y;
     int idx = iy*numCols + ix;
 
-    p1[0] = ix;
-    p1[1] = iy;
+    int p3[2];
+    int p4[2];
 
-    p2[0] = centerRow;
-    p2[1] = centerCol;    
+    p3[0] = ix / numCols;
+    p3[1] = ix % numCols;
 
-    float totalDistance = distance(p1,p2);
+    p4[0] = centerRow;
+    p4[1] = centerCol;    
 
-    if(totalDistance <= radius && ix < numRows && iy < numCols)
+    float totalDistance = distance(p3,p4);
+
+    if(iy == 450)
+        printf("totalDistance: %f", totalDistance);
+
+    if(totalDistance <= radius)
     {
-        pixels[idx] = 0;
+       pixels[idx] = 0;
     }
 
 }
