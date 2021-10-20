@@ -1,15 +1,12 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-
 #include "pgmUtility.h"
 #include "pgmProcess.h"
 // Implement or define each function prototypes listed in pgmUtility.h file.
 // NOTE: Please follow the instructions stated in the write-up regarding the interface of the func$
 // NOTE: You might have to change the name of this file into pgmUtility.cu if needed.
-
 
 int ** pgmRead( char **header, int *numRows, int *numCols, FILE *in){
 
@@ -60,13 +57,17 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
 
     int *p2;
 
+    int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
+
+    flattenArray(pixels, flatArray, numRows, numCols);
+
     size_t bytes = numCols*numRows*sizeof(int);
 
     cudaMalloc(&d_a, bytes);
     cudaMalloc(&p1, 2*sizeof(int));
     cudaMalloc(&p2, 2*sizeof(int));
 
-    cudaMemcpy(d_a, pixels, bytes, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
 
     int blockSize, gridSize;
 
@@ -79,12 +80,15 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     // Execute the kernel
     addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius, p1, p2);
 
-    cudaMemcpy(pixels, d_a, bytes, cudaMemcpyDeviceToHost);
+    cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
+
+    unFlattenArray(pixels, flatArray, numRows, numCols);
 
     cudaFree(d_a);
+    cudaFree(p1);
+    cudaFree(p2);
 
-    free(p1);
-    free(p2);
+    free(flatArray);
 
     return 0;
 }
@@ -94,15 +98,21 @@ int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **h
     return 0;
 }
 
-int pgmDrawEdgeSequential(int *pixels, int numRows, int numCols, int edgeWidth)
+int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth)
 {
+        int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
+        flattenArray(pixels, flatArray, numRows, numCols);
+
         for ( x = 0; x < numRows; x++) {
                 for ( y = 0; y < numCols; y++ ) {
                         int idx = y*numCols + x;
                         if(x < numCols && y < numRows && (x > numCols - edgeWidth || x < edgewidth) && (y > numRows - edgeWitdh || y < edgeWidth))
-                                pixels[idx] = 0;
+                                flatArray[idx] = 0;
                 }
         }
+
+        unFlattenArray(pixels, flatArray, numRows, numCols);
+        free(flatArray);
 }
 
 int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col)
@@ -111,6 +121,7 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
 }
 
 int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out ){
+
     int i, j;
 
     // write the header
@@ -133,6 +144,31 @@ int pgmWrite( const char **header, const int **pixels, int numRows, int numCols,
         return 0;
 }
 
+void flattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
+{
 
+    int index = 0;
 
-                
+    for(int i = 0; i < rowSize; i++)
+    {
+        for(int j = 0; j < colSize; j++)
+        {
+            storageArray[index] = pixels[i][j];
+            index++;
+        }
+    }
+}
+
+void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
+{
+    int index = 0;
+
+    for(int i = 0; i < rowSize; i++)
+    {
+        for(int j = 0; j < colSize; j++)
+        {
+            pixels[i][j] = storageArray[index];
+            index++;
+        }
+    }
+}

@@ -118,5 +118,8 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
  */
 int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out );
 
+void flattenArray(int **pixels, int *storageArray, int rowSize, int colSize);
+
+void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize);
 
 #endif
