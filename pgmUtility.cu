@@ -99,6 +99,23 @@ int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **h
         return 0;
 }
 
+int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth)
+{
+        int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
+        flattenArray(pixels, flatArray, numRows, numCols);
+
+        for ( x = 0; x < numRows; x++) {
+                for ( y = 0; y < numCols; y++ ) {
+                        int idx = y*numCols + x;
+                        if(x < numCols && y < numRows && (x > numCols - edgeWidth || x < edgewidth) && (y > numRows - edgeWitdh || y < edgeWidth))
+                                flatArray[idx] = 0;
+                }
+        }
+
+        unFlattenArray(pixels, flatArray, numRows, numCols);
+        free(flatArray);
+}
+
 int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col)
 {
         return 0;
