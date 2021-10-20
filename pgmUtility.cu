@@ -93,14 +93,28 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     return 0;
 }
 
-int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
+//Draws an edge around the provided PGM.
+__global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth)
 {
-    return 0;
+  //Standard CUDA Variables
+  int ix = blockIdx.x + blockDim.x + threadIdx.x;
+  int iy = blockIdx.y + blockDim.y + threadIdx.y;
+  int idx = iy*numCols + ix;
+  
+  if(ix < numCols && iy < numRows && (ix > numCols - edgeWidth || ix < edgewidth) && (iy > numRows - edgeWitdh || iy < edgeWidth))
+    pixels[idx] = 0;
 }
 
-int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col)
+//Draws a line between two points within the provided PGM.
+__global__ void drawLine (int* pixels, int numRows, int numCols, float slope, int* p1, int* p2)
 {
-    return 0;
+  //Standard CUDA Variables.
+  int ix = blockIdx.x + blockDim.x + threadIdx.x;
+  int iy = blockIdx.y + blockDim.y + threadIdx.y;
+  int idx = iy*numCols + ix;
+  
+  if((iy - (slope * ix) - p1[0]) == 0 && ix < numCols && iy < numRows && iy <= p2[0] && iy >= p1[0] && ix <= p2[1] && ix >= p1[1])
+     pixels[idx] = 0;
 }
 
 int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out ){
