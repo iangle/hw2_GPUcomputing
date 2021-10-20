@@ -33,16 +33,15 @@ __global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, 
     int p3[2];
     int p4[2];
 
+    // x-value
     p3[0] = ix / numCols;
+    // y-value
     p3[1] = ix % numCols;
 
     p4[0] = centerRow;
     p4[1] = centerCol;    
 
     float totalDistance = distance(p3,p4);
-
-    if(iy == 450)
-        printf("totalDistance: %f", totalDistance);
 
     if(totalDistance <= radius)
     {
