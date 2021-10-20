@@ -77,22 +77,17 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     // Number of thread blocks in grid
     gridSize = (int)ceil((float)numRows*numCols/blockSize);
 
-    printf("made 1\n");
-
     // Execute the kernel
     addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius, p1, p2);
 
-    printf("made 2\n");
-
     cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
-    printf("made 3\n");
 
     unFlattenArray(pixels, flatArray, numRows, numCols);
 
     cudaFree(d_a);
+    cudaFree(p1);
+    cudaFree(p2);
 
-    free(p1);
-    free(p2);
     free(flatArray);
 
     return 0;
