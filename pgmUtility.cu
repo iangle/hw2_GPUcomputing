@@ -95,8 +95,14 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
 
 
 int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
+{
+        return 0;
+}
 
 int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col)
+{
+        return 0;
+}
 
 int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out ){
 
