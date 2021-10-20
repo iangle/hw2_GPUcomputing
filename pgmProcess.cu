@@ -1,4 +1,5 @@
-
+#include "pgmProcess.h"
+#include <stdio.h>
 
 /**
  *  Function Name:
@@ -11,6 +12,41 @@
  */
 __device__ float distance( int p1[], int p2[] )
 {
+    float xDistance = p1[0] - p2[0];
+
+    xDistance = pow(xDistance, 2);
+
+    float yDistance = p1[1] - p2[1];
+
+    yDistance = pow(yDistance, 2);
+
+    return sqrt(xDistance + yDistance);
+
+}
+
+__global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius, int *p1, int *p2)
+{
+    int ix   = blockIdx.x*blockDim.x + threadIdx.x;
+    int iy   = blockIdx.y*blockDim.y + threadIdx.y;
+    int idx = iy*numCols + ix;
+
+    int p3[2];
+    int p4[2];
+
+    // x-value
+    p3[0] = ix / numCols;
+    // y-value
+    p3[1] = ix % numCols;
+
+    p4[0] = centerRow;
+    p4[1] = centerCol;    
+
+    float totalDistance = distance(p3,p4);
+
+    if(totalDistance <= radius)
+    {
+       pixels[idx] = 0;
+    }
 
 }
 
