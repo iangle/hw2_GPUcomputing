@@ -103,7 +103,7 @@ int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **h
         int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
         flattenArray(pixels, flatArray, numRows, numCols);
         
-        size_t bytes = numCols*numRows*sizeof(ints);
+        size_t bytes = numCols*numRows*sizeof(int);
         
         //Cuda Memory Work.
         cudaMalloc(&d_a, bytes);
@@ -135,6 +135,9 @@ int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **h
 
 int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth, char **header)
 {
+        int x;
+        int y;
+        
         int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
         flattenArray(pixels, flatArray, numRows, numCols);
 
@@ -148,6 +151,8 @@ int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth,
 
         unFlattenArray(pixels, flatArray, numRows, numCols);
         free(flatArray);
+        
+        return 0;
 }
 
 //Call for the GPU based drawing of a line within a PGM.
@@ -162,12 +167,12 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
         int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
         flattenArray(pixels, flatArray, numRows, numCols);
         
-        size_t bytes = numCols*numRows*sizeof(ints);
+        size_t bytes = numCols*numRows*sizeof(int);
         
         //Cuda Memory Work.
         cudaMalloc(&d_a, bytes);
         cudaMalloc(&p1, 2*sizeof(int));
-        cudaMallod(&p2, 2*sizeof(int));
+        cudaMalloc(&p2, 2*sizeof(int));
         
         //Initialize Points.
         p1[0] = p1row;
@@ -208,6 +213,10 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
 //Call for the CPU based drawing of a line within a PGM.
 int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int p1col, int p2row, int p2col)
 {
+        //Declare Variables
+        int x;
+        int y;
+        
         //Flattening the pixels array.
         int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
         flattenArray(pixels, flatArray, numRows, numCols);
@@ -216,9 +225,10 @@ int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int
         int slope = (p2row-p1row)/(p2col-p1col);
         
         //PGM Scan/Modify Loop for Line Pixels.
-        for ( x = 0; x < numCols; x++) 
+        
+        for (x = 0; x < numCols; x++) 
         {
-                for ( y = 0; y < numRows; y++ ) {
+                for (y = 0; y < numRows; y++ ) {
                         int idx = y*numCols + x;
                         if((y - (slope * x) - p1row) == 0 && x < numCols && y < numRows && y <= p2row && y >= p1row && x <= p2col && x >= p1col)
                                 flatArray[idx] = 0;
