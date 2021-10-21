@@ -53,10 +53,6 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
 
     int *d_a;
 
-    int *p1;
-
-    int *p2;
-
     int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
 
     flattenArray(pixels, flatArray, numRows, numCols);
@@ -64,29 +60,25 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     size_t bytes = numCols*numRows*sizeof(int);
 
     cudaMalloc(&d_a, bytes);
-    cudaMalloc(&p1, 2*sizeof(int));
-    cudaMalloc(&p2, 2*sizeof(int));
 
     cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
 
-    int blockSize, gridSize;
+    dim3 blockSize, gridSize;
 
-    // Number of threads in each thread block
-    blockSize = 1024;
+    blockSize.x = 3;
+    blockSize.y = 4;
 
-    // Number of thread blocks in grid
-    gridSize = (int)ceil((float)numRows*numCols/blockSize);
+    gridSize.x = ceil( (float) numRows / blockSize.x);
+    gridSize.y = ceil( (float) numCols / blockSize.y);
 
     // Execute the kernel
-    addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius, p1, p2);
+    addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius);
 
     cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
 
     unFlattenArray(pixels, flatArray, numRows, numCols);
 
     cudaFree(d_a);
-    cudaFree(p1);
-    cudaFree(p2);
 
     free(flatArray);
 
@@ -145,6 +137,7 @@ int pgmWrite( const char **header, const int **pixels, int numRows, int numCols,
         return 0;
 }
 
+//turns a 2D array into a 1D array
 void flattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
 {
 
@@ -160,6 +153,7 @@ void flattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
     }
 }
 
+//turns a 1D array into a 2D array
 void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
 {
     int index = 0;
