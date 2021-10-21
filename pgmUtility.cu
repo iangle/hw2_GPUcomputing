@@ -187,8 +187,6 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
 {
         //Initialize Variables.
         int* d_a;
-        int* p1;
-        int* p2;
         
         //Flatten the pixels array.
         int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
@@ -198,14 +196,6 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
         
         //Cuda Memory Work.
         cudaMalloc(&d_a, bytes);
-        cudaMalloc(&p1, 2*sizeof(int));
-        cudaMalloc(&p2, 2*sizeof(int));
-        
-        //Initialize Points.
-        p1[0] = p1row;
-        p1[1] = p1col;
-        p2[0] = p2row;
-        p2[1] = p2col;
         
         //Calculate Slope
         int slope = (p2row-p1row)/(p2col-p1col);
@@ -220,7 +210,7 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
         grid.y = ceil( (float)numRows/block.y);
         
         //Execute Kernel.
-        drawLine<<<grid, block>>>(d_a, numRows, numCols, slope, p1, p2);
+        drawLine<<<grid, block>>>(d_a, numRows, numCols, slope, p1row, p1col, p2row, p2col);
         
         //Return From Kernel.
         cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
