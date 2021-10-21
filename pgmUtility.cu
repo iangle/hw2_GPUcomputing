@@ -237,7 +237,7 @@ int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int
         flattenArray(pixels, flatArray, numRows, numCols);
         
         //Calculating Slope.
-        int slope = (p2row-p1row)/(p2col-p1col);
+        float slope = (p2row-p1row)/(p2col-p1col);
         
         //PGM Scan/Modify Loop for Line Pixels.
         for (x = 0; x < numCols; x++) 
