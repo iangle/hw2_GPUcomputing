@@ -240,10 +240,10 @@ int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int
         int slope = (p2row-p1row)/(p2col-p1col);
         
         //PGM Scan/Modify Loop for Line Pixels.
-        
         for (x = 0; x < numCols; x++) 
         {
-                for (y = 0; y < numRows; y++ ) {
+                for (y = 0; y < numRows; y++ ) 
+                {
                         int idx = y*numCols + x;
                         if((y - (slope * x) - p1row) == 0 && x < numCols && y < numRows && y <= p2row && y >= p1row && x <= p2col && x >= p1col)
                                 flatArray[idx] = 0;
