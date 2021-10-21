@@ -24,23 +24,28 @@ __device__ float distance( int p1[], int p2[] )
 
 }
 
-__global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius, int *p1, int *p2)
+__global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius)
 {
     int ix   = blockIdx.x*blockDim.x + threadIdx.x;
     int iy   = blockIdx.y*blockDim.y + threadIdx.y;
     int idx = iy*numCols + ix;
 
+    //creating two arrays that will act as pairs
     int p3[2];
     int p4[2];
 
+    //add the current x and y location to a pair
     p3[0] = ix;
     p3[1] = iy;
 
+    //add the center of the circle to a pair
     p4[0] = centerCol;
     p4[1] = centerRow;    
 
+    //compute the total distance to the point from the center
     float totalDistance = distance(p3,p4);
 
+    //if we are inside the circle then set the location to 0 or black
     if(totalDistance <= radius)
     {
        pixels[idx] = 0;
