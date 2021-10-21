@@ -73,6 +73,6 @@ __global__ void drawLine (int* pixels, int numRows, int numCols, float slope, in
   int iy = blockIdx.y * blockDim.y + threadIdx.y;
   int idx = iy*numCols + ix;
   
-  if((iy - (slope * ix) - p1row) == 0 && ix < numCols && iy < numRows && iy <= p2col && iy >= p1row && ix <= p2col && ix >= p1col)
+  if((iy - (slope * ix) - p1row) >= 0 && (iy - (slope * ix) -p1row) < 1 && ix < numCols && iy < numRows && iy <= p2col && iy >= p1row && ix <= p2col && ix >= p1col)
      pixels[idx] = 0;
 }
