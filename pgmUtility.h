@@ -122,7 +122,9 @@ void flattenArray(int **pixels, int *storageArray, int rowSize, int colSize);
 
 void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize);
 
-void pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth, char **header);
+int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth, char **header);
+
+int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int p1col, int p2row, int p2col);
 
 float distanceSequential( int p1[], int p2[] );
 

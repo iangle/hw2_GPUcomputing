@@ -13,7 +13,7 @@
 
 __device__ float distance( int p1[], int p2[] );
 
-__global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius);
+__global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius, int* p1, int* p2);
 
 //Draws an edge around the provided PGM.
 __global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth);
