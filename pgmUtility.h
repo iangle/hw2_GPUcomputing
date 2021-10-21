@@ -124,4 +124,6 @@ void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize);
 
 void pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth, char **header);
 
+void pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int p1col, int p2row, int p2col);
+
 #endif
