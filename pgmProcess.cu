@@ -58,7 +58,7 @@ __global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth)
   int iy = blockIdx.y + blockDim.y + threadIdx.y;
   int idx = iy*numCols + ix;
   
-  if(ix < numCols && iy < numRows && (ix > numCols - edgeWidth || ix < edgewidth) && (iy > numRows - edgeWitdh || iy < edgeWidth))
+  if(ix < numCols && iy < numRows && (ix > numCols - edgeWidth || ix < edgeWidth) && (iy > numRows - edgeWidth || iy < edgeWidth))
     pixels[idx] = 0;
 }
 
