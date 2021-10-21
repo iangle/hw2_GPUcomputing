@@ -197,10 +197,10 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
         //Cuda Memory Work.
         cudaMalloc(&d_a, bytes);
         
-        //Calculate Slope
-        float slope = (p2row-p1row)/(p2col-p1col);
-        
         cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
+        
+        //Calculate Slope
+        float slope = (p2col-p1col)/(p2row-p1row);        
         
         //Initializing the Grid.
         dim3 grid, block;
