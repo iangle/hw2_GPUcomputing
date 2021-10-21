@@ -53,6 +53,10 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
 
     int *d_a;
 
+    int *p1;
+
+    int *p2;
+
     int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
 
     flattenArray(pixels, flatArray, numRows, numCols);
@@ -60,46 +64,84 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     size_t bytes = numCols*numRows*sizeof(int);
 
     cudaMalloc(&d_a, bytes);
+    cudaMalloc(&p1, 2*sizeof(int));
+    cudaMalloc(&p2, 2*sizeof(int));
 
     cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
 
-    dim3 blockSize, gridSize;
+    int blockSize, gridSize;
 
-    blockSize.x = 3;
-    blockSize.y = 4;
+    // Number of threads in each thread block
+    blockSize = 1024;
 
-    gridSize.x = ceil( (float) numRows / blockSize.x);
-    gridSize.y = ceil( (float) numCols / blockSize.y);
+    // Number of thread blocks in grid
+    gridSize = (int)ceil((float)numRows*numCols/blockSize);
 
     // Execute the kernel
-    addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius);
+    addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius, p1, p2);
 
     cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
 
     unFlattenArray(pixels, flatArray, numRows, numCols);
 
     cudaFree(d_a);
+    cudaFree(p1);
+    cudaFree(p2);
 
     free(flatArray);
 
     return 0;
 }
 
-
+//Call for the GPU based drawing of an edge over a PGM.
 int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
 {
+        //Initialize Variable.
+        int* d_a;
+        
+        //Flatten the array.
+        int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
+        flattenArray(pixels, flatArray, numRows, numCols);
+        
+        size_t bytes = numCols*numRows*sizeof(ints);
+        
+        //Cuda Memory Work.
+        cudaMalloc(&d_a, bytes);
+        
+        cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
+        
+        //Initializing the Grid.
+        dim3 grid, block;
+        block.x = 4;
+        block.y = 4;
+        grid.x = ceil( (float)numCols/block.x);
+        grid.y = ceil( (float)numRows/block.y);
+        
+        //Execute Kernel.
+        drawEdge<<<grid, block>>>(d_a, numRows, numCols, edgeWidth);
+        
+        //Return From Kernel.
+        cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
+        
+        //Unflatten the pixels array.
+        unFlattenArray(pixels, flatArray, numRows, numCols);
+        
+        //Free Memory.
+        cudaFree(d_a);
+        free(flatArray);
+        
         return 0;
 }
 
-void pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth, char **header)
+int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth, char **header)
 {
         int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
         flattenArray(pixels, flatArray, numRows, numCols);
 
-        for (int x = 0; x < numCols; x++) {
-                for (int y = 0; y < numRows; y++ ) {
+        for ( x = 0; x < numCols; x++) {
+                for ( y = 0; y < numRows; y++ ) {
                         int idx = y*numCols + x;
-                        if((x < numCols && y < numRows) && ((x > numCols - edgeWidth || x < edgeWidth) || (y > numRows - edgeWidth || y < edgeWidth)))
+                        if((x < numCols && y < numRows) && ((x > numCols - edgeWidth || x < edgewidth) || (y > numRows - edgeWitdh || y < edgeWidth)))
                                 flatArray[idx] = 0;
                 }
         }
@@ -108,9 +150,88 @@ void pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth
         free(flatArray);
 }
 
+//Call for the GPU based drawing of a line within a PGM.
 int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col)
 {
+        //Initialize Variables.
+        int* d_a;
+        int* p1;
+        int* p2;
+        
+        //Flatten the pixels array.
+        int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
+        flattenArray(pixels, flatArray, numRows, numCols);
+        
+        size_t bytes = numCols*numRows*sizeof(ints);
+        
+        //Cuda Memory Work.
+        cudaMalloc(&d_a, bytes);
+        cudaMalloc(&p1, 2*sizeof(int));
+        cudaMallod(&p2, 2*sizeof(int));
+        
+        //Initialize Points.
+        p1[0] = p1row;
+        p1[1] = p1col;
+        p2[0] = p2row;
+        p2[1] = p2col;
+        
+        //Calculate Slope
+        int slope = (p2row-p1row)/(p2col-p1col);
+        
+        cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
+        
+        //Initializing the Grid.
+        dim3 grid, block;
+        block.x = 4;
+        block.y = 4;
+        grid.x = ceil( (float)numCols/block.x);
+        grid.y = ceil( (float)numRows/block.y);
+        
+        //Execute Kernel.
+        drawEdge<<<grid, block>>>(d_a, numRows, numCols, slope, p1, p2);
+        
+        //Return From Kernel.
+        cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
+        
+        //Unflatten the pixels array.
+        unFlattenArray(pixels, flatArray, numRows, numCols);
+        
+        //Free Memory.
+        cudaFree(d_a);
+        cudaFree(p1);
+        cudaFree(p2);
+        free(flatArray);
+        
         return 0;
+}
+
+//Call for the CPU based drawing of a line within a PGM.
+int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int p1col, int p2row, int p2col)
+{
+        //Flattening the pixels array.
+        int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
+        flattenArray(pixels, flatArray, numRows, numCols);
+        
+        //Calculating Slope.
+        int slope = (p2row-p1row)/(p2col-p1col);
+        
+        //PGM Scan/Modify Loop for Line Pixels.
+        for ( x = 0; x < numCols; x++) 
+        {
+                for ( y = 0; y < numRows; y++ ) {
+                        int idx = y*numCols + x;
+                        if((y - (slope * x) - p1row) == 0 && x < numCols && y < numRows && y <= p2row && y >= p1row && x <= p2col && x >= p1col)
+                                flatArray[idx] = 0;
+                }
+        }
+
+        //Unflatten the pixels array.
+        unFlattenArray(pixels, flatArray, numRows, numCols);
+        
+        //Free memory.
+        free(flatArray);
+        
+        return 0;       
 }
 
 int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out ){
@@ -137,7 +258,6 @@ int pgmWrite( const char **header, const int **pixels, int numRows, int numCols,
         return 0;
 }
 
-//turns a 2D array into a 1D array
 void flattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
 {
 
@@ -153,7 +273,6 @@ void flattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
     }
 }
 
-//turns a 1D array into a 2D array
 void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
 {
     int index = 0;
