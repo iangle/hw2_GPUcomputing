@@ -126,4 +126,6 @@ int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth,
 
 int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int p1col, int p2row, int p2col);
 
+float distanceSequential( int p1[], int p2[] );
+
 #endif
