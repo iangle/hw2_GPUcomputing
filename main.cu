@@ -74,11 +74,8 @@ int main(int argc, char *argv[]){
                 pixels = pgmRead(header, &numRows, &numCols, fp);
 		
 		//GPU Circle
-		then = currentTime();	
+			
                pgmDrawCircle(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header );
-		now = currentTime();
-		circCost = now - then;
-		printf("GPU Circle adding execution in seconds is %f \n", circCost);
 
 		//Sequential Circle
 		then = currentTime();
@@ -113,11 +110,8 @@ int main(int argc, char *argv[]){
                 pixels = pgmRead(header, &numRows, &numCols, fp);
 
 		//GPU Edge
-		then = currentTime();
+		
                 pgmDrawEdge(pixels, numRows, numCols, edgeWidth, header);
-                now = currentTime();
-		edgeCost = now - then;
-		printf("\n\nGPU Edge adding execution in seconds is %f\n", edgeCost);
 
 		//Sequential Edge
 		then = currentTime();
@@ -153,11 +147,9 @@ int main(int argc, char *argv[]){
                 pixels = pgmRead(header, &numRows, &numCols, fp);
                 
 		//GPU Line
-		then = currentTime();
+
 		pgmDrawLine(pixels, numRows, numCols, header, p1y, p1x, p2y, p2x);
-                now = currentTime();
-		lineCost = now - then;
-		printf("\n\nGPU Line adding execution in seconds is %f\n", lineCost);
+
 		
 		//Sequential Line
 		then = currentTime();
