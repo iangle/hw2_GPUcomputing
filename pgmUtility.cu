@@ -220,8 +220,6 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
         
         //Free Memory.
         cudaFree(d_a);
-        cudaFree(p1);
-        cudaFree(p2);
         free(flatArray);
         
         return 0;
