@@ -75,17 +75,17 @@ int main(int argc, char *argv[]){
 		
 		//GPU Circle
 		then = currentTime();	
-                pgmDrawCircle(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header );
+               pgmDrawCircle(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header );
 		now = currentTime();
 		circCost = now - then;
-		printf(%%%%%%% GPU Circle adding execution in seconds is %lf\n", circCost);
+		printf("GPU Circle adding execution in seconds is %f \n", circCost);
 
 		//Sequential Circle
 		then = currentTime();
-		pgmDrawCircleSequential(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
+		addCircleSequential(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
 		now = currentTime();
 		circSequCost = now - then;
-		printf(%%%%%%% Sequential Circle adding execution in seconds is %lf\n", circSequCost);
+		printf("Sequential Circle adding execution in seconds is %f\n", circSequCost);
 
                 pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );    
                 break;
@@ -117,14 +117,14 @@ int main(int argc, char *argv[]){
                 pgmDrawEdge(pixels, numRows, numCols, edgeWidth, header);
                 now = currentTime();
 		edgeCost = now - then;
-		printf(\n\n%%%%%%% GPU Edge adding execution in seconds is %lf\n", edgeCost);
+		printf("\n\nGPU Edge adding execution in seconds is %f\n", edgeCost);
 
 		//Sequential Edge
 		then = currentTime();
-		pgmDrawEdgeSequential(pixel, numRow, numCols, edgeWidth, header);
+		pgmDrawEdgeSequential(pixels, numRows, numCols, edgeWidth, header);
 		now = currentTime();
 		edgeSequCost = now - then;
-		printf(%%%%%%% Sequential Edge adding execution in seconds is %lf\n", edgeSequCost);
+		printf("Sequential Edge adding execution in seconds is %f\n", edgeSequCost);
 		
 		pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );
                 break;
@@ -157,14 +157,14 @@ int main(int argc, char *argv[]){
 		pgmDrawLine(pixels, numRows, numCols, header, p1y, p1x, p2y, p2x);
                 now = currentTime();
 		lineCost = now - then;
-		printf(\n\n%%%%%%% GPU Line adding execution in seconds is %lf\n", lineCost);
+		printf("\n\nGPU Line adding execution in seconds is %f\n", lineCost);
 		
 		//Sequential Line
 		then = currentTime();
-		pgmDrawLineSequential(pixel, numRows, numCols, header, p1y, p1x, p2y, p2x);
+		pgmDrawLineSequential(pixels, numRows, numCols, p1y, p1x, p2y, p2x);
 		now = currentTime();
 		lineSequCost = now - then;
-		printf(%%%%%%% Sequential Line adding execution in seconds is %lf\n", lineSequCost);
+		printf("Sequential Line adding execution in seconds is %f\n", lineSequCost);
 
 		pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );
                 break;
