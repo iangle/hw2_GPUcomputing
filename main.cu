@@ -122,7 +122,13 @@ int main(int argc, char *argv[]){
                     return 1;
                 }
                 out = fopen(newImageFileName, "w");
-                if(out == NULL){pixels = pgmRead(header, &numRows, &numCols, fp);
+                if(out == NULL)
+                {
+                    usage();
+                    fclose(fp);
+                    return 1;
+                }
+                pixels = pgmRead(header, &numRows, &numCols, fp);
                 pgmDrawLine(pixels, numRows, numCols, header, p1y, p1x, p2y, p2x);
                 pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );
                 break;
