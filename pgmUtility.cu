@@ -69,13 +69,19 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
 
     cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
 
-    int blockSize, gridSize;
+    dim3 blockSize, gridSize;
+
+    blockSize.x = 3;
+    blockSize.y = 4;
+
+    gridSize.x = ceil( (float) numRows / blockSize.x);
+    gridSize.y = ceil( (float) numCols / blockSize.y);
 
     // Number of threads in each thread block
-    blockSize = 1024;
+    //blockSize = 1024;
 
     // Number of thread blocks in grid
-    gridSize = (int)ceil((float)numRows*numCols/blockSize);
+    //gridSize = (int)ceil((float)numRows*numCols/blockSize);
 
     // Execute the kernel
     addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius, p1, p2);
