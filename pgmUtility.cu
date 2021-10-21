@@ -4,6 +4,7 @@
 #include <string.h>
 #include "pgmUtility.h"
 #include "pgmProcess.h"
+#include "timing.h"
 // Implement or define each function prototypes listed in pgmUtility.h file.
 // NOTE: Please follow the instructions stated in the write-up regarding the interface of the func$
 // NOTE: You might have to change the name of this file into pgmUtility.cu if needed.
@@ -73,8 +74,12 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     gridSize.y = ceil( (float) numCols / blockSize.y );
 
     // Execute the kernel
+    double then = currentTime();
     addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius);
-
+    double now = currentTime();
+    double cost = now - then;
+    printf("\nThe time cost for the GPU add cirlce is : %f\n", cost);    
+        
     cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
 
     unFlattenArray(pixels, flatArray, numRows, numCols);
@@ -145,8 +150,11 @@ int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **h
         grid.y = ceil( (float)numRows/block.y);
         
         //Execute Kernel.
+        double then = currentTime();
         drawEdge<<<grid, block>>>(d_a, numRows, numCols, edgeWidth);
-        
+        double now = currentTime();
+        double cost = now - then;
+        printf("\nThe time cost for the GPU draw edge is : %f\n", cost); 
         //Return From Kernel.
         cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
         
@@ -214,8 +222,11 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
         grid.y = ceil( (float)numRows/block.y);
         
         //Execute Kernel.
+        double then = currentTime();
         drawLine<<<grid, block>>>(d_a, numRows, numCols, slope, p1row, p1col, p2row, p2col);
-        
+        double now = currentTime();
+        double cost = now - then;
+        printf("\nThe time cost for the GPU add line is : %f\n", cost); 
         //Return From Kernel.
         cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
         
