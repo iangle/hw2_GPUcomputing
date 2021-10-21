@@ -66,13 +66,13 @@ __global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth)
 }
 
 //Draws a line between two points within the provided PGM.
-__global__ void drawLine (int* pixels, int numRows, int numCols, float slope, int* p1, int* p2)
+__global__ void drawLine (int* pixels, int numRows, int numCols, float slope, int p1row, int p1col, int p2row, int p2col)
 {
   //Standard CUDA Variables.
   int ix = blockIdx.x * blockDim.x + threadIdx.x;
   int iy = blockIdx.y * blockDim.y + threadIdx.y;
   int idx = iy*numCols + ix;
   
-  if((iy - (slope * ix) - p1[0]) == 0 && ix < numCols && iy < numRows && iy <= p2[0] && iy >= p1[0] && ix <= p2[1] && ix >= p1[1])
+  if((iy - (slope * ix) - p1row) == 0 && ix < numCols && iy < numRows && iy <= p2col && iy >= p1row && ix <= p2col && ix >= p1col)
      pixels[idx] = 0;
 }
