@@ -85,6 +85,44 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     return 0;
 }
 
+void addCircleSequential(int **pixels, int numRows, int numCols, int centerRow,
+                  int centerCol, int radius, char **header)
+{
+    //creating two arrays that will act as pairs
+    int p3[2];
+    int p4[2];
+
+    for(int x = 0; x < numRows; x++)
+    {
+        for(int y = 0; y < numCols; y++)
+        {
+
+            //add the current x and y location to a pair
+            p3[0] = x;
+            p3[1] = y;
+
+            //add the center of the circle to a pair
+            p4[0] = centerCol;
+            p4[1] = centerRow;    
+
+            //compute the total distance to the point from the center
+            float totalDistance = distance(p3,p4);
+            
+            //if we are inside the circle then set the location to 0 or black
+            if(totalDistance <= radius)
+            {
+                pixels[x][y] = 0;
+            }
+                
+        }
+
+    }
+
+    free(p3);
+    free(p4);
+
+}
+
 
 int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
 {
