@@ -144,7 +144,7 @@ int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth,
         for ( x = 0; x < numCols; x++) {
                 for ( y = 0; y < numRows; y++ ) {
                         int idx = y*numCols + x;
-                        if((x < numCols && y < numRows) && ((x > numCols - edgeWidth || x < edgewidth) || (y > numRows - edgeWitdh || y < edgeWidth)))
+                        if((x < numCols && y < numRows) && ((x > numCols - edgeWidth || x < edgeWidth) || (y > numRows - edgeWidth || y < edgeWidth)))
                                 flatArray[idx] = 0;
                 }
         }
@@ -193,7 +193,7 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
         grid.y = ceil( (float)numRows/block.y);
         
         //Execute Kernel.
-        drawEdge<<<grid, block>>>(d_a, numRows, numCols, slope, p1, p2);
+        drawLine<<<grid, block>>>(d_a, numRows, numCols, slope, p1, p2);
         
         //Return From Kernel.
         cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
