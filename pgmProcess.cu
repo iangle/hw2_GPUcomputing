@@ -36,8 +36,8 @@ __global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, 
     p3[0] = ix;
     p3[1] = iy;
 
-    p4[0] = centerRow;
-    p4[1] = centerCol;    
+    p4[0] = centerCol;
+    p4[1] = centerRow;    
 
     float totalDistance = distance(p3,p4);
 
