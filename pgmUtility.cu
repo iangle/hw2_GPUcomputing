@@ -117,10 +117,6 @@ void addCircleSequential(int **pixels, int numRows, int numCols, int centerRow,
         }
 
     }
-
-    free(p3);
-    free(p4);
-
 }
 
 int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
