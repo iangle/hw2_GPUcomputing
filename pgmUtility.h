@@ -122,4 +122,12 @@ void flattenArray(int **pixels, int *storageArray, int rowSize, int colSize);
 
 void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize);
 
+int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth, char **header);
+
+int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int p1col, int p2row, int p2col);
+
+float distanceSequential( int p1[], int p2[] );
+
+void addCircleSequential(int **pixels, int numRows, int numCols, int centerRow,int centerCol, int radius, char **header);
+
 #endif

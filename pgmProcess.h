@@ -13,12 +13,12 @@
 
 __device__ float distance( int p1[], int p2[] );
 
-__global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius, int *p1, int *p2);
+__global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, int centerCol, int radius);
 
 //Draws an edge around the provided PGM.
 __global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth);
 
 //Draws a line between two specified points in the provided PGM.
-__global__ void drawLine(int* pixels, int numRows, int numCols, float slope, int* p1, int* p2);
+__global__ void drawLine(int* pixels, int numRows, int numCols, float slope, int p1row, int p1col, int p2row, int p2col);
 
 #endif

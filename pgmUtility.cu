@@ -53,10 +53,6 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
 
     int *d_a;
 
-    int *p1;
-
-    int *p2;
-
     int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
 
     flattenArray(pixels, flatArray, numRows, numCols);
@@ -64,57 +60,207 @@ int pgmDrawCircle( int **pixels, int numRows, int numCols, int centerRow,
     size_t bytes = numCols*numRows*sizeof(int);
 
     cudaMalloc(&d_a, bytes);
-    cudaMalloc(&p1, 2*sizeof(int));
-    cudaMalloc(&p2, 2*sizeof(int));
 
     cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
 
-    int blockSize, gridSize;
+    dim3 blockSize, gridSize;
 
     // Number of threads in each thread block
-    blockSize = 1024;
+    blockSize.x = 3;
+    blockSize.y = 4;
 
-    // Number of thread blocks in grid
-    gridSize = (int)ceil((float)numRows*numCols/blockSize);
+    gridSize.x = ceil( (float) numRows / blockSize.x );
+    gridSize.y = ceil( (float) numCols / blockSize.y );
 
     // Execute the kernel
-    addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius, p1, p2);
+    addCircle<<<gridSize, blockSize>>>(d_a, numRows, numCols, centerRow, centerCol, radius);
 
     cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
 
     unFlattenArray(pixels, flatArray, numRows, numCols);
 
     cudaFree(d_a);
-    cudaFree(p1);
-    cudaFree(p2);
 
     free(flatArray);
 
     return 0;
 }
 
-//Draws an edge around the provided PGM.
-__global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth)
+void addCircleSequential(int **pixels, int numRows, int numCols, int centerRow,
+                  int centerCol, int radius, char **header)
 {
-  //Standard CUDA Variables
-  int ix = blockIdx.x + blockDim.x + threadIdx.x;
-  int iy = blockIdx.y + blockDim.y + threadIdx.y;
-  int idx = iy*numCols + ix;
-  
-  if(ix < numCols && iy < numRows && (ix > numCols - edgeWidth || ix < edgewidth) && (iy > numRows - edgeWitdh || iy < edgeWidth))
-    pixels[idx] = 0;
+    //creating two arrays that will act as pairs
+    int p3[2];
+    int p4[2];
+
+    for(int x = 0; x < numRows; x++)
+    {
+        for(int y = 0; y < numCols; y++)
+        {
+
+            //add the current x and y location to a pair
+            p3[0] = x;
+            p3[1] = y;
+
+            //add the center of the circle to a pair
+            p4[0] = centerCol;
+            p4[1] = centerRow;    
+
+            //compute the total distance to the point from the center
+            float totalDistance = distanceSequential(p3,p4);
+            
+            //if we are inside the circle then set the location to 0 or black
+            if(totalDistance <= radius)
+            {
+                pixels[x][y] = 0;
+            }
+                
+        }
+
+    }
 }
 
-//Draws a line between two points within the provided PGM.
-__global__ void drawLine (int* pixels, int numRows, int numCols, float slope, int* p1, int* p2)
+//Call for the GPU based drawing of an edge over a PGM.
+int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
 {
-  //Standard CUDA Variables.
-  int ix = blockIdx.x + blockDim.x + threadIdx.x;
-  int iy = blockIdx.y + blockDim.y + threadIdx.y;
-  int idx = iy*numCols + ix;
-  
-  if((iy - (slope * ix) - p1[0]) == 0 && ix < numCols && iy < numRows && iy <= p2[0] && iy >= p1[0] && ix <= p2[1] && ix >= p1[1])
-     pixels[idx] = 0;
+        //Initialize Variable.
+        int* d_a;
+        
+        //Flatten the array.
+        int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
+        flattenArray(pixels, flatArray, numRows, numCols);
+        
+        size_t bytes = numCols*numRows*sizeof(int);
+        
+        //Cuda Memory Work.
+        cudaMalloc(&d_a, bytes);
+        
+        cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
+        
+        //Initializing the Grid.
+        dim3 grid, block;
+        block.x = 4;
+        block.y = 4;
+        grid.x = ceil( (float)numCols/block.x);
+        grid.y = ceil( (float)numRows/block.y);
+        
+        //Execute Kernel.
+        drawEdge<<<grid, block>>>(d_a, numRows, numCols, edgeWidth);
+        
+        //Return From Kernel.
+        cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
+        
+        //Unflatten the pixels array.
+        unFlattenArray(pixels, flatArray, numRows, numCols);
+        
+        //Free Memory.
+        cudaFree(d_a);
+        free(flatArray);
+        
+        return 0;
+}
+
+int pgmDrawEdgeSequential(int **pixels, int numRows, int numCols, int edgeWidth, char **header)
+{
+        int x;
+        int y;
+        
+        int *flatArray =(int*) malloc(sizeof(int)*numCols*numRows);
+        flattenArray(pixels, flatArray, numRows, numCols);
+
+        for ( x = 0; x < numCols; x++) {
+                for ( y = 0; y < numRows; y++ ) {
+                        int idx = y*numCols + x;
+                        if((x < numCols && y < numRows) && ((x > numCols - edgeWidth || x < edgeWidth) || (y > numRows - edgeWidth || y < edgeWidth)))
+                                flatArray[idx] = 0;
+                }
+        }
+
+        unFlattenArray(pixels, flatArray, numRows, numCols);
+        free(flatArray);
+        
+        return 0;
+}
+
+//Call for the GPU based drawing of a line within a PGM.
+int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1row, int p1col, int p2row, int p2col)
+{
+        //Initialize Variables.
+        int* d_a;
+        
+        //Flatten the pixels array.
+        int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
+        flattenArray(pixels, flatArray, numRows, numCols);
+        
+        size_t bytes = numCols*numRows*sizeof(int);
+        
+        //Cuda Memory Work.
+        cudaMalloc(&d_a, bytes);
+        
+        cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
+
+        float rise = (float) p2row-p1row;
+
+        float run = (float) p2col-p1col;
+        
+        //Calculate Slope
+        float slope = rise / run;        
+        
+        //Initializing the Grid.
+        dim3 grid, block;
+        block.x = 4;
+        block.y = 4;
+        grid.x = ceil( (float)numCols/block.x);
+        grid.y = ceil( (float)numRows/block.y);
+        
+        //Execute Kernel.
+        drawLine<<<grid, block>>>(d_a, numRows, numCols, slope, p1row, p1col, p2row, p2col);
+        
+        //Return From Kernel.
+        cudaMemcpy(flatArray, d_a, bytes, cudaMemcpyDeviceToHost);
+        
+        //Unflatten the pixels array.
+        unFlattenArray(pixels, flatArray, numRows, numCols);
+        
+        //Free Memory.
+        cudaFree(d_a);
+        free(flatArray);
+        
+        return 0;
+}
+
+//Call for the CPU based drawing of a line within a PGM.
+int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int p1col, int p2row, int p2col)
+{
+        //Declare Variables
+        int x;
+        int y;
+        
+        //Flattening the pixels array.
+        int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
+        flattenArray(pixels, flatArray, numRows, numCols);
+        
+        //Calculating Slope.
+        float slope = (p2row-p1row)/(p2col-p1col);
+        
+        //PGM Scan/Modify Loop for Line Pixels.
+        for (x = 0; x < numCols; x++) 
+        {
+                for (y = 0; y < numRows; y++ ) 
+                {
+                        int idx = y*numCols + x;
+                        if((y - (slope * x) - p1row) == 0 && x < numCols && y < numRows && y <= p2row && y >= p1row && x <= p2col && x >= p1col)
+                                flatArray[idx] = 0;
+                }
+        }
+
+        //Unflatten the pixels array.
+        unFlattenArray(pixels, flatArray, numRows, numCols);
+        
+        //Free memory.
+        free(flatArray);
+        
+        return 0;       
 }
 
 int pgmWrite( const char **header, const int **pixels, int numRows, int numCols, FILE *out ){
@@ -168,4 +314,9 @@ void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
             index++;
         }
     }
+}
+
+float distanceSequential( int p1[], int p2[] )
+{
+    return sqrt( pow( p1[0] - p2[0], 2 ) + pow( p1[1] - p2[1], 2 ) );
 }
