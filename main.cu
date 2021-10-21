@@ -4,14 +4,15 @@
 #include "pgmProcess.h"
 #include "pgmUtility.h"
 #include "timing.h"
-//comment here
+//Team: Colton Cronquist, Issac Angles, Aydan Mackay, Josh Lansing;
 
 void usage();
 
 int main(int argc, char *argv[]){
 
     FILE * fp = NULL;
-    FILE * out = NULL; 
+    FILE * out = NULL;
+    double now, then, circCost, circSequCost,  edgeCost, edgeSequCost, lineCost, lineSequCost ;  
 
     char ** header = (char**) malloc( sizeof(char *) * rowsInHeader);
     int i;
@@ -71,11 +72,24 @@ int main(int argc, char *argv[]){
 
 
                 pixels = pgmRead(header, &numRows, &numCols, fp);
-
+		
+		//GPU Circle
+		then = currentTime();	
                 pgmDrawCircle(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header );
+		now = currentTime();
+		circCost = now - then;
+		printf(%%%%%%% GPU Circle adding execution in seconds is %lf\n", circCost);
+
+		//Sequential Circle
+		then = currentTime();
+		pgmDrawCircleSequential(pixels, numRows, numCols, circleCenterRow, circleCenterCol, radius, header);
+		now = currentTime();
+		circSequCost = now - then;
+		printf(%%%%%%% Sequential Circle adding execution in seconds is %lf\n", circSequCost);
 
                 pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );    
                 break;
+
             case 'e':  
                 if(argc != 5){
                     usage();
@@ -97,8 +111,22 @@ int main(int argc, char *argv[]){
                 }
 
                 pixels = pgmRead(header, &numRows, &numCols, fp);
+
+		//GPU Edge
+		then = currentTime();
                 pgmDrawEdge(pixels, numRows, numCols, edgeWidth, header);
-                pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );
+                now = currentTime();
+		edgeCost = now - then;
+		printf(\n\n%%%%%%% GPU Edge adding execution in seconds is %lf\n", edgeCost);
+
+		//Sequential Edge
+		then = currentTime();
+		pgmDrawEdgeSequential(pixel, numRow, numCols, edgeWidth, header);
+		now = currentTime();
+		edgeSequCost = now - then;
+		printf(%%%%%%% Sequential Edge adding execution in seconds is %lf\n", edgeSequCost);
+		
+		pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );
                 break;
 
             case 'l':  
@@ -123,8 +151,22 @@ int main(int argc, char *argv[]){
                 }
                 out = fopen(newImageFileName, "w");
                 pixels = pgmRead(header, &numRows, &numCols, fp);
-                pgmDrawLine(pixels, numRows, numCols, header, p1y, p1x, p2y, p2x);
-                pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );
+                
+		//GPU Line
+		then = currentTime();
+		pgmDrawLine(pixels, numRows, numCols, header, p1y, p1x, p2y, p2x);
+                now = currentTime();
+		lineCost = now - then;
+		printf(\n\n%%%%%%% GPU Line adding execution in seconds is %lf\n", lineCost);
+		
+		//Sequential Line
+		then = currentTime();
+		pgmDrawLineSequential(pixel, numRows, numCols, header, p1y, p1x, p2y, p2x);
+		now = currentTime();
+		lineSequCost = now - then;
+		printf(%%%%%%% Sequential Line adding execution in seconds is %lf\n", lineSequCost);
+
+		pgmWrite((const char **)header, (const int **)pixels, numRows, numCols, out );
                 break;
         
     }
@@ -150,4 +192,3 @@ void usage()
         printf("Usage:\n    -e edgeWidth  oldImageFile  newImageFile\n    -c circleCenterRow circleCenterCol radius  oldImageFile  newImageFile\n    -l  p1row  p1col  p2row  p2col  oldImageFile  newImageFile\n");
 
 }
-                    
