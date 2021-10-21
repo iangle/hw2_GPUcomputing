@@ -69,8 +69,8 @@ __global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth)
 __global__ void drawLine (int* pixels, int numRows, int numCols, float slope, int* p1, int* p2)
 {
   //Standard CUDA Variables.
-  int ix = blockIdx.x + blockDim.x + threadIdx.x;
-  int iy = blockIdx.y + blockDim.y + threadIdx.y;
+  int ix = blockIdx.x * blockDim.x + threadIdx.x;
+  int iy = blockIdx.y * blockDim.y + threadIdx.y;
   int idx = iy*numCols + ix;
   
   if((iy - (slope * ix) - p1[0]) == 0 && ix < numCols && iy < numRows && iy <= p2[0] && iy >= p1[0] && ix <= p2[1] && ix >= p1[1])
