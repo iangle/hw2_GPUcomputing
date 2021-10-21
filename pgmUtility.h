@@ -128,4 +128,6 @@ int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int
 
 float distanceSequential( int p1[], int p2[] );
 
+void addCircleSequential(int **pixels, int numRows, int numCols, int centerRow,int centerCol, int radius, char **header);
+
 #endif
