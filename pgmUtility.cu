@@ -198,7 +198,7 @@ int pgmDrawLine( int **pixels, int numRows, int numCols, char **header, int p1ro
         cudaMalloc(&d_a, bytes);
         
         //Calculate Slope
-        int slope = (p2row-p1row)/(p2col-p1col);
+        float slope = (p2row-p1row)/(p2col-p1col);
         
         cudaMemcpy(d_a, flatArray, bytes, cudaMemcpyHostToDevice);
         
