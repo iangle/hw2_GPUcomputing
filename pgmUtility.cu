@@ -106,7 +106,7 @@ void addCircleSequential(int **pixels, int numRows, int numCols, int centerRow,
             p4[1] = centerRow;    
 
             //compute the total distance to the point from the center
-            float totalDistance = distance(p3,p4);
+            float totalDistance = distanceSequential(p3,p4);
             
             //if we are inside the circle then set the location to 0 or black
             if(totalDistance <= radius)
@@ -122,7 +122,6 @@ void addCircleSequential(int **pixels, int numRows, int numCols, int centerRow,
     free(p4);
 
 }
-
 
 int pgmDrawEdge( int **pixels, int numRows, int numCols, int edgeWidth, char **header )
 {
@@ -204,4 +203,9 @@ void unFlattenArray(int **pixels, int *storageArray, int rowSize, int colSize)
             index++;
         }
     }
+}
+
+float distanceSequential( int p1[], int p2[] )
+{
+    return sqrt( pow( p1[0] - p2[0], 2 ) + pow( p1[1] - p2[1], 2 ) );
 }
