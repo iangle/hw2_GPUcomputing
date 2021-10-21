@@ -57,11 +57,11 @@ __global__ void addCircle(int *pixels, int numRows, int numCols, int centerRow, 
 __global__ void drawEdge (int* pixels, int numRows, int numCols, int edgeWidth)
 {
   //Standard CUDA Variables
-  int ix = blockIdx.x + blockDim.x + threadIdx.x;
-  int iy = blockIdx.y + blockDim.y + threadIdx.y;
+  int ix = blockIdx.x * blockDim.x + threadIdx.x;
+  int iy = blockIdx.y * blockDim.y + threadIdx.y;
   int idx = iy*numCols + ix;
   
-  if(ix <= numCols && iy <= numRows && (ix >= numCols - edgeWidth || ix <= edgeWidth) && (iy >= numRows - edgeWidth || iy <= edgeWidth))
+  if(ix < numCols && iy < numRows && (ix > numCols - edgeWidth || ix < edgeWidth) && (iy > numRows - edgeWidth || iy < edgeWidth))
     pixels[idx] = 0;
 }
 
