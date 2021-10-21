@@ -251,8 +251,9 @@ int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int
         int* flatArray = (int*) malloc(sizeof(int)*numCols*numRows);
         flattenArray(pixels, flatArray, numRows, numCols);
         
-        //Calculating Slope.
+        //Calculating line variables.
         float slope = (p2row-p1row)/(p2col-p1col);
+        float b = p1row - (slope*p1col);
         
         //PGM Scan/Modify Loop for Line Pixels.
         for (x = 0; x < numCols; x++) 
@@ -260,7 +261,7 @@ int pgmDrawLineSequential(int** pixels, int numRows, int numCols, int p1row, int
                 for (y = 0; y < numRows; y++ ) 
                 {
                         int idx = y*numCols + x;
-                        if((y - (slope * x) - p1row) == 0 && x < numCols && y < numRows && y <= p2row && y >= p1row && x <= p2col && x >= p1col)
+                        if(x < numCols && y < numRows && y - (slope*x) - b < .001 && !(y < p1col || x > p2col) && !(y - (slope*x) - (b-1) < .001))
                                 flatArray[idx] = 0;
                 }
         }
